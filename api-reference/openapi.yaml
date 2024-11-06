@@ -1,0 +1,453 @@
+openapi: 3.0.0
+info:
+  description: Apps - _r25-banner
+  title: r25-apps
+  version: 0.1.0
+servers:
+  - url: /
+tags:
+  - description: 監視等に利用するシステム関連API
+    name: _r25BannerSystem
+  - description: インスタンス関連API
+    name: _r25BannerAppInstances
+  - description: バナー関連API
+    name: _r25Banner
+
+paths:
+  /_r25-banner_ping:
+    get:
+      description: 死活監視
+      x-exegesis-controller: systems
+      x-exegesis-operationId: ping#get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerPingResponse'
+          description: Successful ping
+      summary: アプリケーションサーバの疎通確認
+      tags:
+        - _r25BannerSystem
+
+  /projects/{projectId}/spaces/{spaceId}/_r25-banner/instances:
+    post:
+      x-exegesis-controller: appInstances
+      operationId: createR25BannerAppInstance
+      summary: R25バナーアプリケーションを作成する
+      description: R25バナーアプリケーションを作成する
+      tags:
+        - _r25BannerAppInstances
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      requestBody:
+        description: R25バナーアプリケーション作成のリクエストボディ
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/R25BannerAppInstanceCreatePayload'
+      responses:
+        '201':
+          description: R25バナーアプリケーションインスタンス作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerAppInstanceCreateResponse'
+
+  /projects/{projectId}/spaces/{spaceId}/_r25-banner/instances/{instanceId}:
+    get:
+      x-exegesis-controller: appInstances
+      operationId: getR25BannerAppInstance
+      x-r25-policyGroups:
+        - name: r25BannerDescribeAppInstance
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance
+      summary: R25バナーアプリケーションインスタンスを1件取得する
+      description: R25バナーアプリケーションインスタンスを1件取得する
+      tags:
+        - _r25BannerAppInstances
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      responses:
+        '200':
+          description: R25バナーアプリケーションインスタンス 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerAppInstanceResponse'
+
+  /projects/{projectId}/spaces/{spaceId}/_r25-banner/instances/{instanceId}/banners:
+    post:
+      x-exegesis-controller: banners
+      operationId: createR25Banner
+      x-r25-policyGroups:
+        - name: r25BannerCreateBanner
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance/banners
+      summary: バナーを作成する
+      description: バナーを作成する
+      tags:
+        - _r25Banner
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      requestBody:
+        description: バナー作成のリクエストボディ
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/R25BannerCreatePayload'
+      responses:
+        '201':
+          description: バナー作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerResponse'
+    get:
+      x-exegesis-controller: banners
+      operationId: getR25BannerList
+      x-r25-policyGroups:
+        - name: r25BannerListBanner
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance/banners
+      summary: バナーを一覧取得する
+      description: バナーを一覧取得する
+      tags:
+        - _r25Banner
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        # -- query
+        - $ref: '../../packages/openapi/specs/components/parameters/query.yaml#/components/parameters/PagerPageQuery'
+        - $ref: '../../packages/openapi/specs/components/parameters/query.yaml#/components/parameters/PagerSizeQuery'
+        - $ref: '../../packages/openapi/specs/components/parameters/query.yaml#/components/parameters/PagerOrderQuery'
+        - $ref: '../../packages/openapi/specs/components/parameters/query.yaml#/components/parameters/IncludePrivateQuery'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      responses:
+        '200':
+          description: バナー 一覧取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerListResponse'
+
+  /projects/{projectId}/spaces/{spaceId}/_r25-banner/instances/{instanceId}/banners/{contentId}:
+    get:
+      x-exegesis-controller: banners
+      operationId: getR25Banner
+      x-r25-policyGroups:
+        - name: r25BannerDescribeBanner
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance/banners/{contentId}
+      summary: バナーコンテンツを一件取得
+      description: バナーコンテンツを一件取得する
+      tags:
+        - _r25Banner
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ContentIdPath'
+        # -- query
+        - $ref: '../../packages/openapi/specs/components/parameters/query.yaml#/components/parameters/IncludePrivateQuery'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      responses:
+        '200':
+          description: バナー一件取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerResponse'
+    put:
+      x-exegesis-controller: banners
+      operationId: updateR25Banner
+      x-r25-policyGroups:
+        - name: r25BannerPutBanner
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance/banners/{contentId}
+      summary: バナーコンテンツを更新する
+      description: バナーコンテンツを更新する
+      tags:
+        - _r25Banner
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ContentIdPath'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      requestBody:
+        description: バナー更新リクエストボディ
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/R25BannerUpdatePayload'
+      responses:
+        '200':
+          description: バナー更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/R25BannerResponse'
+    delete:
+      x-exegesis-controller: banners
+      operationId: removeR25Banner
+      x-r25-policyGroups:
+        - name: r25BannerRemoveBanner
+          pathRule: /projects/example-project/spaces/example-space/_r25-banner/instances/example-instance/banners/{contentId}
+      summary: バナーコンテンツを一件削除する
+      description: バナーコンテンツを一件削除する
+      tags:
+        - _r25Banner
+      parameters:
+        # -- path
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ProjectIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/SpaceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/AppInstanceIdPath'
+        - $ref: '../../packages/openapi/specs/components/parameters/path.yaml#/components/parameters/ContentIdPath'
+        # -- header
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcAuthorizationHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiKeyHeader'
+        - $ref: '../../packages/openapi/specs/components/parameters/header.yaml#/components/parameters/XR25AcApiSecretHeader'
+      responses:
+        '204':
+          description: バナー削除成功
+
+components:
+  schemas:
+    # --- Ping
+    R25BannerPingResponse:
+      type: object
+      description: Ping結果のレスポンス
+      properties:
+        status:
+          description: ping result
+          type: string
+      required:
+        - status
+
+    R25BannerAppInstanceCreatePayload:
+      description: R25バナーアプリケーション作成のリクエストボディ
+      properties:
+        instanceId:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/instanceId'
+        name:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/name'
+        description:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/description'
+      required:
+        - instanceId
+        - name
+        - description
+
+    R25BannerAppInstanceCreateResponse:
+      description: R25バナーアプリケーション作成レスポンス
+      allOf:
+        - $ref: '#/components/schemas/R25BannerAppInstance'
+        - $ref: '../../packages/openapi/specs/components/schemas/meta.yaml#/components/schemas/Auditing'
+
+    R25BannerAppInstanceResponse:
+      description: R25バナーアプリケーション レスポンス
+      allOf:
+        - $ref: '#/components/schemas/R25BannerAppInstance'
+        - $ref: '../../packages/openapi/specs/components/schemas/meta.yaml#/components/schemas/Auditing'
+
+    R25BannerAppInstance:
+      description: R25バナーアプリケーションインスタンス
+      properties:
+        instanceId:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/instanceId'
+        projectId:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/projectId'
+        spaceId:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/spaceId'
+        definitionId:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/definitionId'
+        name:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/name'
+        description:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstance/properties/description'
+        version:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsDefinition/properties/version'
+        settings:
+          $ref: '../../packages/openapi/specs/components/schemas/application.yaml#/components/schemas/AppsInstanceSettingR25Banner'
+      required:
+        - instanceId
+        - projectId
+        - spaceId
+        - definitionId
+        - name
+        - description
+        - version
+
+    R25BannerCreatePayload:
+      description: バナー作成のリクエストボディ
+      properties:
+        values:
+          $ref: '#/components/schemas/R25BannerContentValues'
+        status:
+          $ref: '../../packages/openapi/specs/components/schemas/content.yaml#/components/schemas/ContentStatusStr'
+        alias:
+          $ref: '../../packages/openapi/specs/components/schemas/meta.yaml#/components/schemas/AliasStr'
+        reservedAt:
+          $ref: '../../packages/openapi/specs/components/schemas/date.yaml#/components/schemas/Unixtime'
+        closingAt:
+          $ref: '../../packages/openapi/specs/components/schemas/date.yaml#/components/schemas/Unixtime'
+        categoryId:
+          $ref: '../../packages/openapi/specs/components/schemas/id.yaml#/components/schemas/GuidStr'
+        tags:
+          type: array
+          items:
+            $ref: '../../packages/openapi/specs/components/schemas/id.yaml#/components/schemas/GuidStr'
+        position:
+          type: number
+      required:
+        - values
+        - status
+        - position
+
+    R25BannerContentValues:
+      description: バナー作成のリクエストボディ
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        isSponsored:
+          type: boolean
+        image:
+          type: object
+          properties:
+            mediaId:
+              $ref: '../../packages/openapi/specs/components/schemas/id.yaml#/components/schemas/GuidStr'
+            accessUrl:
+              $ref: '../../packages/openapi/specs/components/schemas/uri.yaml#/components/schemas/UriStr'
+          required:
+            - mediaId
+      required:
+        - title
+        - url
+        - image
+        - isSponsored
+
+    R25BannerUpdatePayload:
+      description: バナー更新のリクエストボディ
+      properties:
+        values:
+          $ref: '#/components/schemas/R25BannerContentValues'
+        status:
+          $ref: '../../packages/openapi/specs/components/schemas/content.yaml#/components/schemas/ContentStatusStr'
+        alias:
+          $ref: '../../packages/openapi/specs/components/schemas/meta.yaml#/components/schemas/AliasStr'
+        reservedAt:
+          $ref: '../../packages/openapi/specs/components/schemas/date.yaml#/components/schemas/Unixtime'
+        closingAt:
+          $ref: '../../packages/openapi/specs/components/schemas/date.yaml#/components/schemas/Unixtime'
+        categoryId:
+          $ref: '../../packages/openapi/specs/components/schemas/id.yaml#/components/schemas/GuidStr'
+        tags:
+          type: array
+          items:
+            $ref: '../../packages/openapi/specs/components/schemas/id.yaml#/components/schemas/GuidStr'
+        position:
+          type: number
+
+    R25BannerListResponse:
+      allOf:
+        - $ref: '../../packages/openapi/specs/components/schemas/pager.yaml#/components/schemas/Pager'
+        - type: object
+          properties:
+            list:
+              type: array
+              description: バナー一覧
+              items:
+                $ref: '#/components/schemas/R25BannerResponse'
+      required:
+        - list
+
+    R25BannerContent:
+      allOf:
+        - $ref: '../../packages/openapi/specs/components/schemas/content.yaml#/components/schemas/ContentBase'
+        - $ref: '../../packages/openapi/specs/components/schemas/content.yaml#/components/schemas/ContentPosition'
+        - type: object
+          properties:
+            values:
+              $ref: '#/components/schemas/R25BannerContentValues'
+      required:
+        - values
+
+    R25BannerResponse:
+      description: バナー レスポンス
+      allOf:
+        - $ref: '#/components/schemas/R25BannerContent'
+
+  x-r25-policyGroupSchemes:
+    - name: r25BannerDescribeAppInstance
+      displayName: r25Banner:describe:appInstance
+      description: Grants permission to describe app instance
+    - name: r25BannerCreateBanner
+      displayName: r25Banner:create:banner
+      description: Grants permission to create banner
+    - name: r25BannerListBanner
+      displayName: r25Banner:list:banner
+      description: Grants permission to list banners
+    - name: r25BannerDescribeBanner
+      displayName: r25Banner:describe:banner
+      description: Grants permission to describe banner
+    - name: r25BannerPutBanner
+      displayName: r25Banner:put:banner
+      description: Grants permission to update banner
+    - name: r25BannerRemoveBanner
+      displayName: r25Banner:remove:banner
+      description: Grants permission to remove banner
+  x-r25-roleSchemes:
+    - name: r25BannerAdmin
+      displayName: r25Banner:banner:admin
+      parameters:
+        - projectId
+        - spaceId
+        - instanceId
+      kinds:
+        - $ref: '../../packages/openapi/specs/components/schemas/role_kinds.yaml#/components/x-constants/ROLE_KIND_ADMIN'
+      summary: Provides full access to project account
+      description: |
+        Provides full access to project account
+        Automatically assigned when:
+          - Project creation
+      policyGroups:
+        - r25BannerDescribeAppInstance
+        - r25BannerCreateBanner
+        - r25BannerListBanner
+        - r25BannerDescribeBanner
+        - r25BannerPutBanner
+        - r25BannerRemoveBanner
